@@ -21,7 +21,7 @@ def check_mount(path):
         print(f"{path} is not mounted, mounting now....")
         try:
             subprocess.check_call(["mount", path])
-            print(f"SUCCESS, Mounted: {path}")
+            print(f"SUCCESS, Mounted: {path}\n")
             return True
         except:
             print(f"FAILED to mount {path}")
@@ -49,12 +49,12 @@ if __name__ == '__main__':
     # Check if dest path is mounted
     if check_mount(dest_path):
         mounted_paths.append(dest_path)
-        for source_path in source_paths:                              # Loop through multiple source paths
+        for source_path in source_paths:                                            # Loop through multiple source paths
             is_mounted = check_mount(source_path)
-            if is_mounted:                                            # Mount source path
-                mounted_paths.append(source_path)                     # Add to mounted list
-                print(f"Rsync {source_path} to {dest_path}")          #run rsync
-                subprocess.call(shlex.split(rsync_cmd(source_path, dest_path)))
+            if is_mounted:                                                          # Mount source path
+                mounted_paths.append(source_path)                                   # Add to mounted list
+                print(f"Rsync {source_path} to {dest_path}")          
+                subprocess.call(shlex.split(rsync_cmd(source_path, dest_path)))     # Run rsync
         time.sleep(10)
     else:
         # Cannot mount source, exit
@@ -65,6 +65,7 @@ if __name__ == '__main__':
     print("Cleaning up...")
     print("-"*30)
     
+    # Unmount all paths that are previously mounted
     for mounted_path in mounted_paths:
         unmount(mounted_path)
     
