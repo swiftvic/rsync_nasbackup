@@ -1,8 +1,9 @@
-import os, subprocess, time, shlex
+import os, subprocess, time, shlex, time
 
 synology_path_home = "/media/synology/home"
 synology_path_shared = "/media/synology/shared"
 dest_path = "/media/seagate"
+log_path = "/home/vauyeung/rsync_logs"
 
 #source_paths = [synology_path_home, synology_path_shared]
 source_paths = [synology_path_home]
@@ -28,13 +29,26 @@ def check_mount(path):
             return False
 
 def unmount(path):
+    '''
+    Tries to unmount and if it fails to do so, it will 
+    print that it failed to unmount the path.
+    '''
     try: 
         subprocess.check_call(["umount", "--verbose", path])
     except:
         print(f"FAILED: Could not unmount {path}")
 
 def rsync_cmd(source, dest):
-    return (rsync + " " + source + " " + dest)
+    '''
+    Function takes in source path and destination path.
+    Contructs the commandline Rsync by taking the current date
+    concats with source and dest, logs as well with file name of source
+    concatinating with backup.log
+    '''
+    named_tuple = time.localtime()        # Get struct_time
+    time_string = time.strftime("%Y-%m-%d", named_tuple)
+    source_string = source.split("/")         
+    return (rsync + " " + source + " " + dest + " --log-file="+ log_path + "/" + time_string + "_" + source_string[-2] + "_" + source_string[-1] + "-backup.log") 
 
 if __name__ == '__main__':
 
